@@ -55,12 +55,60 @@ def get_activities():
 @app.post("/activities/{activity_name}/signup")
 def signup_for_activity(activity_name: str, email: str):
     """Sign up a student for an activity"""
+    # Add new activities
+    activities.update({
+        "Soccer Team": {
+            "description": "Join the school soccer team and compete in matches",
+            "schedule": "Wednesdays, 4:00 PM - 6:00 PM",
+            "max_participants": 18,
+            "participants": []
+        },
+        "Basketball Club": {
+            "description": "Practice basketball skills and play friendly games",
+            "schedule": "Mondays, 4:00 PM - 5:30 PM",
+            "max_participants": 15,
+            "participants": []
+        },
+        "Drama Club": {
+            "description": "Act, direct, and produce school plays and performances",
+            "schedule": "Thursdays, 3:30 PM - 5:00 PM",
+            "max_participants": 25,
+            "participants": []
+        },
+        "Art Workshop": {
+            "description": "Explore painting, drawing, and sculpture techniques",
+            "schedule": "Fridays, 2:00 PM - 3:30 PM",
+            "max_participants": 20,
+            "participants": []
+        },
+        "Math Olympiad": {
+            "description": "Prepare for math competitions and solve challenging problems",
+            "schedule": "Tuesdays, 4:00 PM - 5:00 PM",
+            "max_participants": 10,
+            "participants": []
+        },
+        "Science Club": {
+            "description": "Conduct experiments and explore scientific concepts",
+            "schedule": "Thursdays, 4:00 PM - 5:00 PM",
+            "max_participants": 15,
+            "participants": []
+        }
+    })
+    
     # Validate activity exists
     if activity_name not in activities:
         raise HTTPException(status_code=404, detail="Activity not found")
 
     # Get the specific activity
     activity = activities[activity_name]
+
+    # Validate student is not already signed up
+    if email in activity["participants"]:
+        raise HTTPException(status_code=400, detail="Student already signed up")
+
+    # Validate activity is not full
+    if len(activity["participants"]) >= activity["max_participants"]:
+        raise HTTPException(status_code=400, detail="Activity is full")
 
     # Add student
     activity["participants"].append(email)
